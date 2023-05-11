@@ -7,6 +7,7 @@ import {
     StyleSheet,
     Pressable,
 } from "react-native";
+import axios from "axios";
 
 const TodoList = ({
     todoList,
@@ -14,11 +15,13 @@ const TodoList = ({
     editTodo,
     removeTodo,
     clearList,
+    update,
 }) => {
     const handleChange = (id) => {
         let temp = todoList.map((item) => {
             if (id === item.id) {
-                return { ...item, checked: !item.checked };
+                update({ ...item, isChecked: !item.isChecked });
+                return { ...item, isChecked: !item.isChecked };
             }
             return item;
         });
@@ -27,14 +30,14 @@ const TodoList = ({
 
     return (
         <View style={styles.list}>
-            {todoList.map(({ id, text, checked }) => {
+            {todoList.map(({ id, name, isChecked }) => {
                 return (
                     <View key={id} style={styles.listItem}>
                         <View style={styles.listItemTextBox}>
                             <Pressable onPress={() => handleChange(id)}>
                                 <MaterialCommunityIcons
                                     name={
-                                        checked
+                                        isChecked
                                             ? "checkbox-marked"
                                             : "checkbox-blank-outline"
                                     }
@@ -47,12 +50,12 @@ const TodoList = ({
                                     styles.listItemText,
                                     {
                                         textDecorationLine: `${
-                                            checked ? "line-through" : "null"
+                                            isChecked ? "line-through" : "null"
                                         }`,
                                     },
                                 ]}
                             >
-                                {text}
+                                {name}
                             </Text>
                         </View>
                         <View style={styles.listItemIcons}>

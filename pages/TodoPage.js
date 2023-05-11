@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -7,6 +7,9 @@ import {
     StyleSheet,
 } from "react-native";
 import TodoList from "../components/TodoList";
+import axios from "axios";
+
+const url = "http://10.0.2.2:3000/todos";
 
 const TodoPage = () => {
     const [todoList, setTodoList] = useState([]);
@@ -18,16 +21,17 @@ const TodoPage = () => {
         const newList = todoList.filter((todo) => todo.id !== id);
         setTodoList(newList);
         setIsEditing(false);
+        deletetodo(id);
     };
 
     const editTodo = (id) => {
         const specficTodo = todoList.find((item) => item.id === id);
         setIsEditing(true);
         setEditId(id);
-        setTodoText(specficTodo.text);
+        setTodoText(specficTodo.name);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!todoText) {
             // Show Alert
             console.log("Enter Text");
@@ -36,7 +40,8 @@ const TodoPage = () => {
             setTodoList(
                 todoList.map((todo) => {
                     if (todo.id === editId) {
-                        return { ...todo, text: todoText };
+                        update({ ...todo, name: todoText });
+                        return { ...todo, name: todoText };
                     }
                     return todo;
                 })
@@ -45,19 +50,68 @@ const TodoPage = () => {
             setEditId(null);
             setIsEditing(false);
         } else {
-            setTodoList([
-                ...todoList,
-                { id: Date.now(), text: todoText, checked: false },
-            ]);
+            let id = await add(todoText);
+            setTodoList([...todoList, { id, name: todoText, checked: false }]);
             setTodoText("");
         }
     };
 
     const clearList = () => {
+        clear();
         setTodoList([]);
         setIsEditing(false);
         setTodoText("");
     };
+
+    const fetchData = async () => {
+        try {
+            const { data } = await axios(url);
+            setTodoList(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const update = async (item) => {
+        try {
+            const resp = await axios.put(`${url}/${item.id}`, item);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    const add = async (todoText) => {
+        try {
+            const resp = await axios.post(`${url}`, {
+                name: todoText,
+                isChecked: false,
+                userId: 1,
+            });
+            return resp.data.id;
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const clear = async () => {
+        try {
+            const resp = await axios.delete(`${url}/clear`);
+            console.log(resp.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const deletetodo = async (id) => {
+        try {
+            const resp = await axios.delete(`${url}/${id}`);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -82,6 +136,7 @@ const TodoPage = () => {
                 removeTodo={removeTodo}
                 setTodoList={setTodoList}
                 clearList={clearList}
+                update={update}
             />
         </View>
     );
