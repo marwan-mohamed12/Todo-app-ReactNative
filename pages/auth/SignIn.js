@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
     StyleSheet,
     Text,
@@ -6,13 +7,16 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { logIn } from "./authRequests";
+
 const SignIn = ({ navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     function handleSignIn() {
-        navigation.navigate("Todo");
-        console.log(email, password);
+        logIn(navigation, email, password);
+        setEmail("");
+        setPassword("");
     }
 
     return (
@@ -41,7 +45,7 @@ const SignIn = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity
                 style={styles.signUpLink}
-                onPress={() => navigation.navigate("SignUp")}
+                onPress={() => navigation.navigate("Registration")}
             >
                 <Text style={styles.signUpText}>Sign Up</Text>
             </TouchableOpacity>

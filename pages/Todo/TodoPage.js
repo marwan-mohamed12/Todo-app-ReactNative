@@ -6,8 +6,9 @@ import {
     TouchableOpacity,
     StyleSheet,
 } from "react-native";
-import TodoList from "../components/TodoList";
-import axios from "axios";
+import TodoList from "../../components/TodoList";
+import { fetchData, add, update, clear, deletetodo } from "./todoRequests";
+import { getUserId } from "../../utils/storage";
 
 const url = "http://10.0.2.2:3000/todos";
 
@@ -50,67 +51,23 @@ const TodoPage = () => {
             setEditId(null);
             setIsEditing(false);
         } else {
-            let id = await add(todoText);
+            const userId = parseInt(await getUserId());
+            let id = await add(todoText, userId);
             setTodoList([...todoList, { id, name: todoText, checked: false }]);
             setTodoText("");
         }
     };
 
-    const clearList = () => {
-        clear();
+    const clearList = async () => {
+        const userId = parseInt(await getUserId());
+        clear(userId);
         setTodoList([]);
         setIsEditing(false);
         setTodoText("");
     };
 
-    const fetchData = async () => {
-        try {
-            const { data } = await axios(url);
-            setTodoList(data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const update = async (item) => {
-        try {
-            const resp = await axios.put(`${url}/${item.id}`, item);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-    const add = async (todoText) => {
-        try {
-            const resp = await axios.post(`${url}`, {
-                name: todoText,
-                isChecked: false,
-                userId: 1,
-            });
-            return resp.data.id;
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const clear = async () => {
-        try {
-            const resp = await axios.delete(`${url}/clear`);
-            console.log(resp.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const deletetodo = async (id) => {
-        try {
-            const resp = await axios.delete(`${url}/${id}`);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     useEffect(() => {
-        fetchData();
+        fetchData(setTodoList);
     }, []);
 
     return (

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
-import TodoPage from "./pages/TodoPage";
-import SignUp from "./pages/SignUp";
-import SignIn from "./pages/SignIn";
+import TodoPage from "./pages/Todo/TodoPage";
+import SignUp from "./pages/auth/SignUp";
+import SignIn from "./pages/auth/SignIn";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -12,13 +12,17 @@ const App = () => {
     return (
         <NavigationContainer>
             <Stack.Navigator>
+                <Stack.Screen name="Registration" component={SignUp} />
                 <Stack.Screen
                     name="SignIn"
                     component={SignIn}
-                    options={{ title: "Welcome" }}
+                    // options={{ headerBackVisible: false }}
                 />
-                <Stack.Screen name="SignUp" component={SignUp} />
-                <Stack.Screen name="Todo" component={TodoPage} />
+                <Stack.Screen
+                    name="Todo"
+                    component={TodoPage}
+                    // options={{ headerBackVisible: false }}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );

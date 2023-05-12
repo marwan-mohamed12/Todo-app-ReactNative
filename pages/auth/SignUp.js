@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { register } from "./authRequests";
 
 import { FontAwesome } from "@expo/vector-icons";
 
@@ -13,9 +14,11 @@ const SignUp = ({ navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    function handleSignUp() {
-        navigation.navigate("Todo");
-    }
+    const handleSignUp = async () => {
+        register(navigation, email, password);
+        setEmail("");
+        setPassword("");
+    };
 
     return (
         <View style={styles.container}>
